@@ -37,6 +37,7 @@ export function ReviewInterface({
         setHoveredElement,
         setIframeReady,
         sidebarOpen,
+        setCommentRects,
     } = useReviewStore();
 
     // Load initial comments from SSR data
@@ -62,8 +63,12 @@ export function ReviewInterface({
                 setClickedElement(data);
                 setCommentDialogOpen(true);
             }
+
+            if (type === "COMMENTS_POSITIONS" && mode === "review") {
+                setCommentRects(event.data.positions || {});
+            }
         },
-        [mode, setClickedElement, setCommentDialogOpen, setHoveredElement, setIframeReady]
+        [mode, setClickedElement, setCommentDialogOpen, setHoveredElement, setIframeReady, setCommentRects]
     );
 
     useEffect(() => {

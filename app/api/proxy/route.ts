@@ -174,6 +174,42 @@ const REVIEW_SCRIPT = `
   window.addEventListener('load', function() {
     window.parent.postMessage({ type: 'IFRAME_READY' }, '*');
   });
+
+  // Track comments and sync their positions
+  var activeComments = [];
+  
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'SYNC_COMMENTS') {
+      activeComments = e.data.comments || [];
+      updateCommentPositions();
+    }
+  });
+
+  function updateCommentPositions() {
+    if (!activeComments || activeComments.length === 0) return;
+    var positions = {};
+    activeComments.forEach(function(c) {
+      if (!c.elementSelector) return;
+      try {
+        var el = document.querySelector(c.elementSelector);
+        if (el) {
+          positions[c.id] = JSON.parse(JSON.stringify(el.getBoundingClientRect()));
+        }
+      } catch(e) {}
+    });
+    window.parent.postMessage({ type: 'COMMENTS_POSITIONS', positions: positions }, '*');
+  }
+
+  // Update positions on scroll and resize
+  window.addEventListener('scroll', updateCommentPositions, true);
+  window.addEventListener('resize', updateCommentPositions);
+  
+  // Create a MutationObserver to catch layout reflows and dynamic additions
+  var observer = new MutationObserver(function() {
+    updateCommentPositions();
+  });
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true, characterData: true });
+
 })();
 </script>
 `;

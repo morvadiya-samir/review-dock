@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import {
-    Plus, ExternalLink, MessageSquare, ArrowRight, Globe, Loader2
+    Plus, ExternalLink, MessageSquare, ArrowRight, Globe, Loader2, Trash2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +32,7 @@ export function ProjectPagesTab({ project }: { project: Project }) {
     const [showAddForm, setShowAddForm] = useState(false);
     const [newUrl, setNewUrl] = useState("");
     const [isAdding, setIsAdding] = useState(false);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
 
     const addPage = async () => {
         if (!newUrl.trim()) return;
@@ -55,6 +56,27 @@ export function ProjectPagesTab({ project }: { project: Project }) {
             toast.error("Something went wrong");
         } finally {
             setIsAdding(false);
+        }
+    };
+
+    const deletePage = async (pageId: string) => {
+        if (!confirm("Are you sure you want to delete this page?")) return;
+        
+        setDeletingId(pageId);
+        try {
+            const res = await fetch(`/api/projects/${project.id}/pages/${pageId}`, {
+                method: "DELETE",
+            });
+            if (!res.ok) {
+                toast.error("Failed to delete page");
+                return;
+            }
+            toast.success("Page deleted!");
+            router.refresh();
+        } catch {
+            toast.error("Something went wrong");
+        } finally {
+            setDeletingId(null);
         }
     };
 
@@ -136,6 +158,15 @@ export function ProjectPagesTab({ project }: { project: Project }) {
                                             Review <ArrowRight size={12} className="ml-1" />
                                         </Button>
                                     </Link>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => deletePage(page.id)}
+                                        disabled={deletingId === page.id}
+                                        className="h-8 w-8 p-0 text-slate-500 hover:text-red-400 hover:bg-red-400/10 transition-colors ml-1"
+                                    >
+                                        {deletingId === page.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                                    </Button>
                                 </div>
                             </div>
                         </div>

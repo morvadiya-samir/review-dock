@@ -80,10 +80,19 @@ export function CommentDialog({
         if (!clickedElement) return;
         setIsSubmitting(true);
 
-        // Calculate percentage-based position from iframe rect
-        // For now we store the raw x/y — in a real impl you'd calculate % from iframe bounds
-        const xPct = clickedElement.x != null ? Math.min(100, Math.max(0, (clickedElement.x / window.innerWidth) * 100)) : undefined;
-        const yPct = clickedElement.y != null ? Math.min(100, Math.max(0, (clickedElement.y / window.innerHeight) * 100)) : undefined;
+        // Calculate percentage offset *inside* the clicked element
+        let xPct, yPct;
+        if (clickedElement) {
+            const rect = clickedElement.rect;
+            if (rect && rect.width > 0 && rect.height > 0 && clickedElement.x != null && clickedElement.y != null) {
+                xPct = Math.min(100, Math.max(0, ((clickedElement.x - rect.left) / rect.width) * 100));
+                yPct = Math.min(100, Math.max(0, ((clickedElement.y - rect.top) / rect.height) * 100));
+            } else if (clickedElement.x != null && clickedElement.y != null) {
+                // Fallback to window percentage if rect is invalid
+                xPct = Math.min(100, Math.max(0, (clickedElement.x / window.innerWidth) * 100));
+                yPct = Math.min(100, Math.max(0, (clickedElement.y / window.innerHeight) * 100));
+            }
+        }
 
         try {
             const res = await fetch(`/api/pages/${pageId}/comments`, {

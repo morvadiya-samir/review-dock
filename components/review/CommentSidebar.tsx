@@ -267,7 +267,7 @@ export function CommentSidebar({
                             <CommentCard
                                 key={comment.id}
                                 comment={comment}
-                                index={comments.indexOf(comment) + 1}
+                                index={comments.length - comments.indexOf(comment)}
                                 currentUserId={currentUserId}
                                 currentUserName={currentUserName}
                                 currentUserImage={currentUserImage}

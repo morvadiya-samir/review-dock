@@ -39,6 +39,10 @@ interface ReviewStore {
     // Iframe ref signal
     iframeReady: boolean;
     setIframeReady: (ready: boolean) => void;
+
+    // Element Rects for Comments
+    commentRects: Record<string, DOMRect>;
+    setCommentRects: (rects: Record<string, DOMRect>) => void;
 }
 
 export const useReviewStore = create<ReviewStore>((set) => ({
@@ -80,4 +84,7 @@ export const useReviewStore = create<ReviewStore>((set) => ({
 
     iframeReady: false,
     setIframeReady: (iframeReady) => set({ iframeReady }),
+
+    commentRects: {},
+    setCommentRects: (commentRects) => set({ commentRects }),
 }));

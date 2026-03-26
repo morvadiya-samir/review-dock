@@ -38,6 +38,16 @@ export function WebsiteFrame({ pageUrl, pageId }: WebsiteFrameProps) {
         }
     }, [mode, proxyUrl, setIframeReady]);
 
+    // Continuously sync active comments to iframe so it calculates their bounding rects
+    useEffect(() => {
+        if (iframeReady && iframeRef.current?.contentWindow) {
+            iframeRef.current.contentWindow.postMessage({
+                type: 'SYNC_COMMENTS',
+                comments: comments.map(c => ({ id: c.id, elementSelector: c.elementSelector }))
+            }, '*');
+        }
+    }, [iframeReady, comments]);
+
     const containerStyle =
         device === "desktop"
             ? { width: "100%", height: "100%" }
@@ -80,36 +90,37 @@ export function WebsiteFrame({ pageUrl, pageId }: WebsiteFrameProps) {
 
             {/* Review mode indicator bar */}
             {mode === "review" && iframeReady && (
-                <div className="absolute top-0 left-0 right-0 z-20 bg-violet-600/10 border-b border-violet-500/30 px-4 py-1.5 flex items-center justify-center">
+                <div className="absolute top-0 left-0 right-0 z-20 bg-violet-600/10 border-b border-violet-500/30 px-4 py-1.5 flex items-center justify-center pointer-events-none">
                     <p className="text-xs text-violet-400 font-medium">
                         🎯 Review Mode — hover to highlight, click to annotate
                     </p>
                 </div>
             )}
 
-            {/* The iframe */}
-            <iframe
-                ref={iframeRef}
-                src={proxyUrl}
-                style={frameStyle}
-                title="Website preview"
-                sandbox="allow-scripts allow-same-origin allow-forms"
-                onLoad={() => setIframeReady(true)}
-                className={cn(device === "desktop" ? "" : "")}
-            />
+            {/* The responsive frame wrapper */}
+            <div style={frameStyle} className="relative bg-white flex-shrink-0">
+                <iframe
+                    ref={iframeRef}
+                    src={proxyUrl}
+                    style={{ width: "100%", height: "100%", border: "none" }}
+                    title="Website preview"
+                    sandbox="allow-scripts allow-same-origin allow-forms"
+                    onLoad={() => setIframeReady(true)}
+                />
 
-            {/* Comment pins overlay — only show in review mode */}
-            {mode === "review" && iframeReady && (
-                <div className="absolute inset-0 pointer-events-none z-30">
-                    {comments.map((comment, index) => (
-                        <CommentPin
-                            key={comment.id}
-                            comment={comment}
-                            index={index + 1}
-                        />
-                    ))}
-                </div>
-            )}
+                {/* Comment pins overlay — exactly aligns with iframe padding/viewport */}
+                {mode === "review" && iframeReady && (
+                    <div className="absolute inset-0 pointer-events-none z-30 overflow-hidden rounded-[12px]">
+                        {comments.map((comment, index) => (
+                            <CommentPin
+                                key={comment.id}
+                                comment={comment}
+                                index={comments.length - index}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

@@ -18,10 +18,22 @@ interface CommentPinProps {
 }
 
 export function CommentPin({ comment, index }: CommentPinProps) {
-    const { selectedCommentId, setSelectedCommentId } = useReviewStore();
+    const { selectedCommentId, setSelectedCommentId, commentRects } = useReviewStore();
     const isSelected = selectedCommentId === comment.id;
 
-    if (!comment.xPosition || !comment.yPosition) return null;
+    const rect = commentRects[comment.id];
+    let left = `${comment.xPosition ?? 50}%`;
+    let top = `${comment.yPosition ?? 50}%`;
+
+    if (rect) {
+        // Position relative to the element's actual current dimensions
+        const xOff = ((comment.xPosition ?? 50) / 100) * rect.width;
+        const yOff = ((comment.yPosition ?? 50) / 100) * rect.height;
+        left = `${rect.left + xOff}px`;
+        top = `${rect.top + yOff}px`;
+    } else if (comment.xPosition == null || comment.yPosition == null) {
+        return null;
+    }
 
     return (
         <motion.button
@@ -31,8 +43,8 @@ export function CommentPin({ comment, index }: CommentPinProps) {
             onClick={() => setSelectedCommentId(isSelected ? null : comment.id)}
             className="pointer-events-auto absolute transform -translate-x-1/2 -translate-y-1/2 group"
             style={{
-                left: `${comment.xPosition}%`,
-                top: `${comment.yPosition}%`,
+                left,
+                top,
                 zIndex: isSelected ? 50 : 30,
             }}
             title={`#${index}: ${comment.content.slice(0, 60)}`}
