@@ -43,9 +43,10 @@ export async function GET(
     if (!project) return NextResponse.json({ error: "Project not found" }, { status: 404 });
 
     if (format === "csv") {
+        const origin = req.nextUrl.origin;
         const rows: string[] = [
             // Header
-            ["ID", "Page URL", "Element", "Type", "Priority", "Status", "Comment", "Suggested Text", "Author", "Replies", "Created At"].join(","),
+            ["ID", "Page URL", "Screenshot", "Type", "Priority", "Status", "Comment", "Suggested Text", "Author", "Replies", "Created At"].join(","),
         ];
 
         for (const page of project.pages) {
@@ -53,11 +54,15 @@ export async function GET(
                 const escape = (s: string | null | undefined) =>
                     `"${(s ?? "").replace(/"/g, '""').replace(/\n/g, " ")}"`;
 
+                const screenshotUrl = comment.attachments.length > 0 
+                    ? `=IMAGE("${origin}/api/comments/${comment.id}/screenshot")` 
+                    : "";
+
                 rows.push(
                     [
                         comment.id,
                         escape(page.url),
-                        escape(`<${comment.elementTag.toLowerCase()}> ${comment.elementSelector}`),
+                        escape(screenshotUrl),
                         comment.type,
                         comment.priority,
                         comment.status,

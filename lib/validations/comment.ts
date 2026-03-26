@@ -10,6 +10,7 @@ export const createCommentSchema = z.object({
     yPosition: z.number().min(0).max(100).optional(),
     type: z.enum(["NOTE", "BUG", "SUGGESTION", "CONTENT_CHANGE", "DESIGN_CHANGE"]),
     priority: z.enum(["LOW", "MEDIUM", "HIGH", "CRITICAL"]),
+    attachments: z.array(z.string()).optional(),
 });
 
 export type CreateCommentInput = z.infer<typeof createCommentSchema>;

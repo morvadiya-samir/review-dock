@@ -116,6 +116,7 @@ export interface HoveredElement {
 export interface ClickedElement extends HoveredElement {
     x: number;
     y: number;
+    screenshot?: string;
 }
 
 export type ReviewMode = "preview" | "review";

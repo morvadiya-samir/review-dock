@@ -105,6 +105,7 @@ export function CommentDialog({
                     elementText: clickedElement.textContent,
                     xPosition: xPct,
                     yPosition: yPct,
+                    attachments: clickedElement.screenshot ? [clickedElement.screenshot] : undefined,
                 }),
             });
 

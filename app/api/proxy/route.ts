@@ -134,17 +134,35 @@ const REVIEW_SCRIPT = `
     e.preventDefault();
     e.stopPropagation();
     var el = e.target;
-    window.parent.postMessage({
-      type: 'ELEMENT_CLICK',
-      data: {
+    var data = {
         tagName: el.tagName,
         textContent: (el.textContent || '').trim().substring(0, 500),
         selector: generateSelector(el),
         rect: JSON.parse(JSON.stringify(el.getBoundingClientRect())),
         x: e.clientX,
         y: e.clientY
-      }
-    }, '*');
+    };
+
+    if (window.html2canvas) {
+      var oldOutline = el.style.outline;
+      var oldOutlineOffset = el.style.outlineOffset;
+      el.style.outline = 'none';
+      el.style.outlineOffset = 'none';
+      
+      window.html2canvas(el, { useCORS: true, logging: false, scale: 1 }).then(function(canvas) {
+        data.screenshot = canvas.toDataURL('image/jpeg', 0.8);
+        el.style.outline = oldOutline;
+        el.style.outlineOffset = oldOutlineOffset;
+        window.parent.postMessage({ type: 'ELEMENT_CLICK', data: data }, '*');
+      }).catch(function(err) {
+        console.error('Screenshot failed', err);
+        el.style.outline = oldOutline;
+        el.style.outlineOffset = oldOutlineOffset;
+        window.parent.postMessage({ type: 'ELEMENT_CLICK', data: data }, '*');
+      });
+    } else {
+      window.parent.postMessage({ type: 'ELEMENT_CLICK', data: data }, '*');
+    }
   }, true);
 
   // CSS Selector Generator
@@ -221,6 +239,10 @@ const REVIEW_STYLES = `
 </style>
 `;
 
+const HTML2CANVAS_SCRIPT = `
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+`;
+
 // ============================================================
 // Main proxy handler
 // ============================================================
@@ -278,11 +300,11 @@ export async function GET(request: NextRequest) {
         // 2. In review mode, inject script + styles before </head> or at start
         if (mode === "review") {
             if (html.includes("</head>")) {
-                html = html.replace("</head>", `${REVIEW_STYLES}${REVIEW_SCRIPT}</head>`);
+                html = html.replace("</head>", `${REVIEW_STYLES}${HTML2CANVAS_SCRIPT}${REVIEW_SCRIPT}</head>`);
             } else if (html.includes("<body")) {
-                html = html.replace("<body", `${REVIEW_STYLES}${REVIEW_SCRIPT}<body`);
+                html = html.replace("<body", `${REVIEW_STYLES}${HTML2CANVAS_SCRIPT}${REVIEW_SCRIPT}<body`);
             } else {
-                html = REVIEW_STYLES + REVIEW_SCRIPT + html;
+                html = REVIEW_STYLES + HTML2CANVAS_SCRIPT + REVIEW_SCRIPT + html;
             }
         }
 
