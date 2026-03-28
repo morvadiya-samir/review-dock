@@ -55,7 +55,7 @@ export async function GET(
                     `"${(s ?? "").replace(/"/g, '""').replace(/\n/g, " ")}"`;
 
                 const screenshotUrl = comment.attachments.length > 0 
-                    ? `=IMAGE("${origin}/api/comments/${comment.id}/screenshot")` 
+                    ? `=HYPERLINK("${origin}/api/comments/${comment.id}/screenshot", "View Screenshot")` 
                     : "";
 
                 rows.push(
