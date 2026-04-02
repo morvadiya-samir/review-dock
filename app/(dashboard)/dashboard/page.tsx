@@ -26,7 +26,7 @@ export default async function DashboardPage() {
     });
 
     const totalComments = projects.flatMap((p: any) => p.pages).reduce(
-        (acc: number, page) => acc + (page._count?.comments ?? 0),
+        (acc: number, page: any) => acc + (page._count?.comments ?? 0),
         0
     );
 
