@@ -1,7 +1,7 @@
 "use client";
 
 import { useReviewStore } from "@/stores/reviewStore";
-import { motion } from "framer-motion";
+
 import {
     Monitor, Tablet, Smartphone, Eye, MousePointer2,
     PanelRight, PanelRightClose, ArrowLeft, LayoutGrid
@@ -25,6 +25,7 @@ interface ReviewToolbarProps {
 }
 
 export function ReviewToolbar({ projectId, projectName, pageUrl, pageId }: ReviewToolbarProps) {
+    void pageId;
     const { mode, setMode, device, setDevice, sidebarOpen, setSidebarOpen, comments } =
         useReviewStore();
 

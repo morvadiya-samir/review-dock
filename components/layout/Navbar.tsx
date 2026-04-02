@@ -21,7 +21,7 @@ export function Navbar() {
     const { data: session } = useSession();
     const { theme, setTheme } = useTheme();
     const [isLoading, setIsLoading] = useState(false);
-    const user = session?.user as any;
+    const user = session?.user as { name?: string | null, email?: string | null, image?: string | null, plan?: string };
 
     const initials = user?.name
         ?.split(" ")

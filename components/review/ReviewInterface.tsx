@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import { useReviewStore } from "@/stores/reviewStore";
 import { ReviewToolbar } from "./ReviewToolbar";
 import { WebsiteFrame } from "./WebsiteFrame";

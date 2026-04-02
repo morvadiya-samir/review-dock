@@ -51,7 +51,6 @@ function CommentCard({
     const { selectedCommentId, setSelectedCommentId, removeComment, updateComment } =
         useReviewStore();
     const isSelected = selectedCommentId === comment.id;
-    const [expanded, setExpanded] = useState(false);
     const [resolving, setResolving] = useState(false);
 
     const StatusIcon = STATUS_ICONS[comment.status] ?? AlertCircle;
@@ -208,6 +207,7 @@ export function CommentSidebar({
     currentUserName: string;
     currentUserImage: string | null;
 }) {
+    void pageId;
     const { comments, mode } = useReviewStore();
     const [filter, setFilter] = useState<"ALL" | "OPEN" | "RESOLVED">("ALL");
 
@@ -263,7 +263,7 @@ export function CommentSidebar({
                             </p>
                         </div>
                     ) : (
-                        filtered.map((comment, i) => (
+                        filtered.map((comment) => (
                             <CommentCard
                                 key={comment.id}
                                 comment={comment}

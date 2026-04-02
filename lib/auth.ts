@@ -21,8 +21,8 @@ export const authConfig: NextAuthConfig = {
         async jwt({ token, user }) {
             if (user) {
                 token.id = user.id;
-                token.role = (user as any).role;
-                token.plan = (user as any).plan;
+                token.role = (user as { role?: string, plan?: string }).role;
+                token.plan = (user as { role?: string, plan?: string }).plan;
             }
             // Fallback: NextAuth v5 also stores the user id in token.sub
             if (!token.id && token.sub) {
@@ -34,8 +34,8 @@ export const authConfig: NextAuthConfig = {
             if (session.user) {
                 // token.id is set from authorize(); token.sub is NextAuth's built-in fallback
                 session.user.id = (token.id ?? token.sub) as string;
-                (session.user as any).role = token.role;
-                (session.user as any).plan = token.plan;
+                (session.user as { role?: unknown, plan?: unknown }).role = token.role;
+                (session.user as { role?: unknown, plan?: unknown }).plan = token.plan;
             }
             return session;
         },

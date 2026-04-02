@@ -3,6 +3,7 @@ import { auth } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 import { sendProjectInvitationEmail } from "@/lib/email";
 import { z } from "zod";
+import { MemberRole } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
@@ -79,7 +80,7 @@ export async function POST(
 
         // Directly add as member if they have an account
         const member = await prisma.projectMember.create({
-            data: { userId: existingUser.id, projectId: id, role: role as any },
+            data: { userId: existingUser.id, projectId: id, role: role as MemberRole },
             include: { user: { select: { id: true, name: true, email: true, image: true } } },
         });
 

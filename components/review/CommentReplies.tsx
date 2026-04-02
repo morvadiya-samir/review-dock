@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, Loader2, ChevronDown, ChevronUp } from "lucide-react";
@@ -25,6 +25,7 @@ export function CommentReplies({
     currentUserName,
     currentUserImage,
 }: CommentRepliesProps) {
+    void currentUserId;
     const [expanded, setExpanded] = useState(false);
     const [replies, setReplies] = useState<ReplyType[]>([]);
     const [loaded, setLoaded] = useState(false);

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 import { createCommentSchema } from "@/lib/validations/comment";
+import { CommentType, Priority, CommentStatus } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
@@ -25,9 +26,9 @@ export async function GET(
     const comments = await prisma.comment.findMany({
         where: {
             pageId,
-            ...(type ? { type: type as any } : {}),
-            ...(priority ? { priority: priority as any } : {}),
-            ...(status ? { status: status as any } : {}),
+            ...(type ? { type: type as CommentType } : {}),
+            ...(priority ? { priority: priority as Priority } : {}),
+            ...(status ? { status: status as CommentStatus } : {}),
         },
         include: {
             author: { select: { id: true, name: true, email: true, image: true } },

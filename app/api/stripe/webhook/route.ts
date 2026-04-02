@@ -18,15 +18,15 @@ export async function POST(req: NextRequest) {
 
     try {
         event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
-    } catch (err: any) {
-        console.error(`Webhook signature verification failed: ${err.message}`);
-        return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 });
+    } catch (err: unknown) {
+        console.error(`Webhook signature verification failed: ${(err as Error).message}`);
+        return NextResponse.json({ error: `Webhook Error: ${(err as Error).message}` }, { status: 400 });
     }
 
     try {
         switch (event.type) {
             case "checkout.session.completed": {
-                const session = event.data.object as any;
+                const session = event.data.object as { metadata?: { userId?: string, plan?: string }, customer?: string };
                 const userId = session.metadata?.userId;
                 const plan = session.metadata?.plan as "PRO" | "ENTERPRISE" | undefined;
 
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
             }
 
             case "customer.subscription.deleted": {
-                const subscription = event.data.object as any;
+                const subscription = event.data.object as { metadata?: { userId?: string } };
                 const userId = subscription.metadata?.userId;
 
                 if (userId) {
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
             }
 
             case "customer.subscription.updated": {
-                const subscription = event.data.object as any;
+                // const subscription = event.data.object as any;
                 // Handle updates (e.g. paused -> active) if needed
                 break;
             }

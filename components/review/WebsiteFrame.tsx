@@ -3,7 +3,7 @@
 import { useRef, useEffect } from "react";
 import { useReviewStore } from "@/stores/reviewStore";
 import { CommentPin } from "./CommentPin";
-import { cn } from "@/lib/utils";
+
 import { Loader2 } from "lucide-react";
 
 const DEVICE_WIDTHS: Record<string, string> = {
@@ -24,6 +24,7 @@ interface WebsiteFrameProps {
 }
 
 export function WebsiteFrame({ pageUrl, pageId }: WebsiteFrameProps) {
+    void pageId;
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const { mode, device, comments, iframeReady, setIframeReady } = useReviewStore();

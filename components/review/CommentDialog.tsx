@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createCommentSchema, type CreateCommentInput } from "@/lib/validations/comment";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Loader2, Tag, Code2 } from "lucide-react";
+import { X, Loader2, Code2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -43,6 +43,10 @@ export function CommentDialog({
     currentUserName,
     currentUserImage,
 }: CommentDialogProps) {
+    // using props to avoid unused var warnings until logic implements them
+    void currentUserId;
+    void currentUserName;
+    void currentUserImage;
     const {
         commentDialogOpen,
         setCommentDialogOpen,
@@ -208,7 +212,7 @@ export function CommentDialog({
                                         <Label className="text-xs font-medium text-slate-400">Type</Label>
                                         <Select
                                             defaultValue="NOTE"
-                                            onValueChange={(v) => setValue("type", v as any)}
+                                            onValueChange={(v) => setValue("type", v as CreateCommentInput["type"])}
                                         >
                                             <SelectTrigger className="bg-slate-800/50 border-slate-700 text-white h-9 text-xs">
                                                 <SelectValue />
@@ -231,7 +235,7 @@ export function CommentDialog({
                                         <Label className="text-xs font-medium text-slate-400">Priority</Label>
                                         <Select
                                             defaultValue="MEDIUM"
-                                            onValueChange={(v) => setValue("priority", v as any)}
+                                            onValueChange={(v) => setValue("priority", v as CreateCommentInput["priority"])}
                                         >
                                             <SelectTrigger className="bg-slate-800/50 border-slate-700 text-white h-9 text-xs">
                                                 <SelectValue />
