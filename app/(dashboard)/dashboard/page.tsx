@@ -25,8 +25,8 @@ export default async function DashboardPage() {
         orderBy: { updatedAt: "desc" },
     });
 
-    const totalComments = projects.flatMap((p: any) => p.pages).reduce(
-        (acc: number, page: any) => acc + (page._count?.comments ?? 0),
+    const totalComments = projects.flatMap((p) => p.pages).reduce(
+        (acc: number, page) => acc + (page._count?.comments ?? 0),
         0
     );
 
@@ -57,7 +57,7 @@ export default async function DashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                     {projects.map((project) => {
                         const commentCount = project.pages.reduce(
-                            (acc, p) => acc + (p._count?.comments ?? 0),
+                            (acc: number, p) => acc + (p._count?.comments ?? 0),
                             0
                         );
                         return (
