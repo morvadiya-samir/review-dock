@@ -53,7 +53,7 @@ export default async function ProjectDetailPage({
 
     const isOwner = project.ownerId === session.user.id;
     const totalComments = project.pages.reduce(
-        (acc, p) => acc + (p._count?.comments ?? 0),
+        (acc: number, p: any) => acc + (p._count?.comments ?? 0),
         0
     );
 
